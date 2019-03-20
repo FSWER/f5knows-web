@@ -1,5 +1,7 @@
 package com.f5knows.export.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.f5knows.domain.Weather;
 import com.f5knows.export.WeatherService;
 import org.springframework.stereotype.Service;
 
@@ -14,13 +16,15 @@ import java.net.URL;
 public class WeatherServiceImpl implements WeatherService {
 
     @Override
-    public String getWeather() {
-        return getWeatherByLocation("北京");
+    public String getWeather(String location) {
+        String json = getWeatherByLocation(location);
+        Weather weather = JSON.parseObject(json, Weather.class);
+        return json;
     }
 
 
-    private  String getWeatherByLocation(String localtion){
-        String param = "key=e18de841fc5847a3aa7a3c58d5e37bce&location=北京";
+    private String getWeatherByLocation(String location) {
+        String param = "key=e18de841fc5847a3aa7a3c58d5e37bce&location=" + location;
         StringBuilder sb = new StringBuilder();
         InputStream is = null;
         BufferedReader br = null;
@@ -44,24 +48,25 @@ public class WeatherServiceImpl implements WeatherService {
             br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
             String line;
             //缓冲逐行读取
-            while ( ( line = br.readLine() ) != null ) {
+            while ((line = br.readLine()) != null) {
                 sb.append(line);
             }
             System.out.println(sb.toString());
-        } catch ( Exception ignored ) {
+        } catch (Exception ignored) {
         } finally {
             //关闭流
             try {
-                if(is!=null){
+                if (is != null) {
                     is.close();
                 }
-                if(br!=null){
+                if (br != null) {
                     br.close();
                 }
-                if (out!=null){
+                if (out != null) {
                     out.close();
                 }
-            } catch ( Exception ignored ) {}
+            } catch (Exception ignored) {
+            }
         }
         return sb.toString();
     }
